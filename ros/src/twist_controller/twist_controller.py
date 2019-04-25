@@ -1,7 +1,7 @@
 from pid import PID
 from lowpass import LowPassFilter
 from yaw_controller import YawController
-import pospy
+import rospy
 
 GAS_DENSITY = 2.858
 ONE_MPH = 0.44704
@@ -33,7 +33,7 @@ class Controller(object):
         self.accel_limit = accel_limit
         self.wheel_radius = wheel_radius
 
-        self.last_time = rospy.got_time()
+        self.last_time = rospy.get_time()
         # pass
 
     def control(self, current_vel, dbw_enabled, linear_vel, angular_vel):
