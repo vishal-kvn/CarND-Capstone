@@ -159,11 +159,9 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-        self.process_traffic_lights_count = self.process_traffic_lights_count + 1
         closest_light = None
         line_wp_idx = None
 
-        #if ((self.process_traffic_lights_count % 3) == 0):
         # List of positions that correspond to the line to stop in front of for a given intersection
         stop_line_positions = self.config['stop_line_positions']
         if(self.pose):
