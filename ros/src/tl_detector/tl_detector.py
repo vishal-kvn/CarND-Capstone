@@ -54,7 +54,8 @@ class TLDetector(object):
 
         self.bridge = CvBridge()
         
-        self.light_classifier = TLClassifier('ssd_mobilenet_v1_sim_fronzen_inference_graph.pb')
+        self.light_classifier = TLClassifier('frozen_inference_graph_sim_v1.4.pb')
+        #self.light_classifier = TLClassifier('ssd_mobilenet_v1_sim_fronzen_inference_graph.pb')
         #self.light_classifier = TLClassifier('faster_rcnn_sim_frozen_inference_graph.pb')
 
         self.listener = tf.TransformListener()
