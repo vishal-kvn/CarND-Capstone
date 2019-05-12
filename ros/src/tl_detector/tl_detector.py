@@ -16,9 +16,8 @@ from scipy.spatial import KDTree
 STATE_COUNT_THRESHOLD = 3
 TEST_MODE_ENABLED = False
 LOGGING_THROTTLE_FACTOR = 5
-CAMERA_IMG_PROCESS_RATE = 0.20 #ms
+CAMERA_IMG_PROCESS_RATE = 0.25 #250 ms
 WAYPOINT_DIFFERENCE = 300
-
 
 class TLDetector(object):
     def __init__(self):
@@ -154,11 +153,6 @@ class TLDetector(object):
 
             # Get classification
             classification = self.light_classifier.get_classification(cv_image)
-
-            ## Save image (throttled)
-            #if SAVE_IMAGES and (self.process_count % LOGGING_THROTTLE_FACTOR == 0):
-            #    save_file = "../../../imgs/{}-{:.0f}.jpeg".format(self.to_string(classification), (time.time() * 100))
-            #    cv2.imwrite(save_file, cv_image)
 
         return classification
 

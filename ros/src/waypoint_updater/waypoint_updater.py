@@ -26,6 +26,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 
 LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
 MAX_DECEL = .5
+WAYPOINT_FREQUENCY = 25 #Hz
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -51,18 +52,11 @@ class WaypointUpdater(object):
         #rospy.spin()
         self.loop()
 
-    #def loop(self):
-    #    rate = rospy.Rate(50)
-    #    while not rospy.is_shutdown():
-    #        if self.pose and self.base_waypoints:
-    #            # Get closet waypoint
-    #            closest_waypoint_idx = self.get_closest_waypoint_idx()
-    #            self.publish_waypoints(closest_waypoint_idx)
     def loop(self):
         #rate = rospy.Rate(50)
         #rate = rospy.Rate(30)
         #rate = rospy.Rate(25)
-        rate = rospy.Rate(20)
+        rate = rospy.Rate(WAYPOINT_FREQUENCY)
         while not rospy.is_shutdown():
             if self.pose and self.base_lane:
                 self.publish_waypoints()
@@ -111,7 +105,6 @@ class WaypointUpdater(object):
         return lane
 
     def decelerate_waypoints(self, waypoints, closest_idx):
-        #pass
         temp = []
         for i, wp in enumerate(waypoints):
 
@@ -130,12 +123,9 @@ class WaypointUpdater(object):
         return temp
 
     def pose_cb(self, msg):
-        # TODO: Implement
-        # pass
         self.pose = msg
 
     def waypoints_cb(self, waypoints):
-        # TODO: Implement
         self.base_lane = waypoints
         if not self.waypoints_2d:
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
@@ -143,8 +133,6 @@ class WaypointUpdater(object):
         pass
 
     def traffic_cb(self, msg):
-        # TODO: Callback for /traffic_waypoint message. Implement
-        # pass
         self.stopline_wp_idx = msg.data
 
     def obstacle_cb(self, msg):
