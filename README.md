@@ -14,8 +14,18 @@ The code mostly follows the walk-throughs, with some additional handling of the 
 
 #### Challenges
 
-#### Challenges with running the simulator and ros nodes
-#### Evaluating Docker vs Virtual Machine
+As part of the initial run, VirtualBox was used to run ROS. An alternative approach was to use Docker to run ROS with the assumption that if the app is dockerized, it can be run on more poweful hardware in the cloud. Surprisingly the VirtualBox approach had lesser lag compared to the Docker approach. The following setups were used for running the ROS -
+* VirtualBox on Host Machine(2.5 GHz Intel Core i7, 16 GB 1600 MHz DDR3, NVIDIA GeForce GT 750M 2 GB Intel Iris Pro 1536 MB)
+* Docker Container on Host Machine(2.5 GHz Intel Core i7, 16 GB 1600 MHz DDR3, NVIDIA GeForce GT 750M 2 GB Intel Iris Pro 1536 MB)
+* Udacity Workspace
+* Docker Container on [Paperspace](www.paperspace.com) Linux Desktop with RAM: 30 GB, CPUS: 8, HD: 50 GB, GPU: 8 GB.
+
+Both the Udacity Workspace and Containerized Docker approach had more lag compared to the VirtualBox approach. Hence, VirtualBox was used to run ROS.
+
+To reduce the resource demands of the simulator the following steps were taken -
+* Turn on camera streaming when the car is less than 300 waypoints to the traffic light
+* Process an image at a 20 millsecond interval
+* Reduce the Rate of the waypoint updater to 20Hz from 50Hz
 
 ### System Architecture
 The following system architecture diagram shows the ROS nodes and topics used in the project.
@@ -132,9 +142,12 @@ self.throttle_pub = rospy.Publisher('/vehicle/throttle_cmd',ThrottleCmd, queue_s
 self.brake_pub = rospy.Publisher('/vehicle/brake_cmd',BrakeCmd, queue_size=1)
 ```
 
-
 ### Traffic Light Detection and Classification
+Transfer learning was used to detect and classify traffic lights. The following models were considered -
+* (ssd_mobilenet_v1_coco_2018_01_28)[http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_coco_2018_01_28.tar.gz]
+* (faster_rcnn_resnet101_coco_2018_01_28)[http://download.tensorflow.org/models/object_detection/faster_rcnn_resnet101_coco_2018_01_28.tar.gz]
 
+Given the resource constraints imposed by the simulator, ssd_mobilenet_v1 was chosen due to it's size and speed with some compromise on accuracy. The detection and classification repo can be found here, [TrafficLight_Detection_Classification](https://github.com/vishal-kvn/TrafficLight_Detection_Classification). 
 
 ### Native Installation
 
@@ -207,4 +220,15 @@ roslaunch launch/site.launch
 ```
 5. Confirm that traffic light detection works on real life images
 
+### References
+The following resources were hugely helpful in understanding and completing the project -
+* [Tutorial](https://pythonprogramming.net/introduction-use-tensorflow-object-detection-api-tutorial/) for using Tensorflow API for object detection and classification
+* Great write up on using Tensorflow 1.4 and the appropriate version of Tensorflow API https://github.com/alex-lechner/Traffic-Light-Classification#linux
+* https://becominghuman.ai/traffic-light-detection-tensorflow-api-c75fdbadac62
+
 ### Docker Bug
+A lot of time was spent trying to figure out the following error when the simulator was trying to connect to the Docker conatiner the ROS - 
+```
+File "/capstone/ros/src/styx/server.py", line 44, in control bridge.publish_controls(data) File "/capstone/ros/src/styx/bridge.py", line 145, in publish_controls self.publishers['steering_report'].publish(self.create_steer(steering)) File "/capstone/ros/src/styx/bridge.py", line 102, in create_steer st.steering_wheel_angle_cmd = val * math.pi/180.AttributeError: 'SteeringReport' object has no attribute 'steering_wheel_angle_cmd'
+```
+The fix for this error is to use install the `dbw_mkz_msgs` module in the `/ros/src` folder of the application. The `dbw_mkz_msgs` module can be found in the udacity workspace or from the (here)[https://github.com/vishal-kvn/CarND-Capstone/tree/docker/ros/src/dbw_mkz_msgs]
