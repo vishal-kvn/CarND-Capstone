@@ -26,7 +26,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 
 LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
 MAX_DECEL = .5
-WAYPOINT_FREQUENCY = 25 #Hz
+WAYPOINT_FREQUENCY = 30 #Hz
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -49,7 +49,6 @@ class WaypointUpdater(object):
         self.waypoints_2d = None
         self.waypoint_tree = None
 
-        #rospy.spin()
         self.loop()
 
     def loop(self):
@@ -83,9 +82,6 @@ class WaypointUpdater(object):
         return closest_idx
 
     def publish_waypoints(self):
-        #lane = Lane()
-        #lane.header = self.base_waypoints.header
-        #lane.waypoints = self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
         final_lane = self.generate_lane()
         self.final_waypoints_pub.publish(final_lane)
 
@@ -95,7 +91,6 @@ class WaypointUpdater(object):
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
         base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
-        #base_waypoints = self.base_waypoints[closest_idx:farthest_idx]
 
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
